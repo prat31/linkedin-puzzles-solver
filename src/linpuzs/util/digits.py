@@ -1,7 +1,7 @@
 """Reading numbers drawn in LinkedIn's game font.
 
-Digits are matched against 0-9 templates cut from a real screenshot (see
-scripts/make_digits.py). The same font is used by several games, with dark
+Digits are matched against 0-9 templates (digits.npz) cut from the numbered
+dots in media/example/zip.png. The same font is used by several games, with dark
 digits on light (Zip) or light digits on colour (Patches); callers pass a
 boolean ink mask, so colour doesn't matter here.
 """
