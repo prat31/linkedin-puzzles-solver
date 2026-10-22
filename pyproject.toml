@@ -1,6 +1,6 @@
 [project]
 name = "linpuzs"
-version = "0.1.0"
+dynamic = ["version"]  # from the latest vX.Y.Z git tag, see .github/workflows/release.yml
 description = "LinkedIn puzzle solver: screenshots your phone over ADB, solves the daily game, and taps in the answer."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -19,8 +19,11 @@ linpuzs = "linpuzs.cli:main"
 dev = ["pytest>=8.0"]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/linpuzs"]
