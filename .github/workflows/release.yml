@@ -22,6 +22,8 @@ jobs:
     permissions:
       contents: write # push the tag and create the GitHub release
       id-token: write # trusted publishing to PyPI
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,3 +74,67 @@ jobs:
         run: |
           git push origin "$TAG"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" dist/* --generate-notes
+
+  # Updates Formula/linpuzs.rb in prat31/homebrew-tap for the version just
+  # published. Pushes with the deploy key stored in the HOMEBREW_TAP_KEY secret.
+  homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for the release on PyPI
+        id: sdist
+        run: |
+          version="${TAG#v}"
+          for _ in $(seq 1 30); do
+            if json=$(curl -fsSL "https://pypi.org/pypi/linpuzs/$version/json"); then break; fi
+            echo "waiting for linpuzs $version on PyPI..."
+            sleep 10
+          done
+          sdist=$(echo "$json" | jq -c '.urls[] | select(.packagetype == "sdist")')
+          echo "url=$(echo "$sdist" | jq -r .url)" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(echo "$sdist" | jq -r .digests.sha256)" >> "$GITHUB_OUTPUT"
+
+      - uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Render the formula
+        run: |
+          brew tap prat31/tap
+          formula="$(brew --repository prat31/tap)/Formula/linpuzs.rb"
+          mkdir -p "$(dirname "$formula")"
+          sed -e 's|@@SDIST_URL@@|${{ steps.sdist.outputs.url }}|' \
+              -e 's|@@SDIST_SHA256@@|${{ steps.sdist.outputs.sha256 }}|' \
+              packaging/homebrew/linpuzs.rb > "$formula"
+          # numpy and pillow come from Homebrew; hatchling/hatch-vcs build the sdist.
+          brew update-python-resources --ignore-main-package-cooldown \
+            --exclude-packages numpy,pillow --extra-packages hatchling,hatch-vcs \
+            prat31/tap/linpuzs
+          cat "$formula"
+
+      - name: Test-install the formula
+        run: |
+          brew install --build-from-source prat31/tap/linpuzs
+          brew test prat31/tap/linpuzs
+
+      - name: Push to the tap
+        env:
+          TAP_KEY: ${{ secrets.HOMEBREW_TAP_KEY }}
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$TAP_KEY" | ssh-add -
+          cd "$(brew --repository prat31/tap)"
+          git remote set-url origin git@github.com:prat31/homebrew-tap.git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/linpuzs.rb
+          if git diff --cached --quiet; then
+            echo "Formula already up to date"
+            exit 0
+          fi
+          git commit -m "linpuzs ${TAG#v}"
+          git push origin HEAD:main

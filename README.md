@@ -6,17 +6,41 @@ Plug in your Android phone, open today's LinkedIn puzzle and run `linpuzs`. It g
 
 ### Supported games
 
-| Game | Goal | How the answer is entered |
-| --- | --- | --- |
-| 👑 Queens | One crown in every row, column and colour region, none touching | Double-tap each crown cell |
-| 🌗 Tango | Fill with suns and moons: balanced rows and columns, no three in a row, respect `=` and `×` | Tap each empty cell (once for sun, twice for moon) |
-| 〰️ Zip | One path through every cell, passing the numbered dots in order | One continuous drag |
-| 🔢 Mini Sudoku | 1-6 once in every row, column and 2×3 box | Tap the cell, then the number pad |
-| 🧵 Patches | Split the grid into rectangles matching each clue's shape and size | Drag across each patch |
+| Game | Goal |
+| --- | --- |
+| 👑 Queens | One crown in every row, column and colour region, none touching |
+| 🌗 Tango | Fill with suns and moons: balanced rows and columns, no three in a row, respect `=` and `×` |
+| 〰️ Zip | One path through every cell, passing the numbered dots in order |
+| 🔢 Mini Sudoku | 1-6 once in every row, column and 2×3 box |
+| 🧵 Patches | Split the grid into rectangles matching each clue's shape and size |
 
-## Setup
+## Install
 
-Requires [uv](https://docs.astral.sh/uv/) and `adb` (Android platform-tools) on your PATH, with USB debugging enabled on the phone.
+You'll need Python 3.10+, `adb` (Android platform-tools) on your PATH, and USB debugging turned on in your phone's developer options.
+
+With [pipx](https://pipx.pypa.io/) (recommended, keeps it in its own environment):
+
+```bash
+pipx install linpuzs
+```
+
+Or with pip:
+
+```bash
+pip install linpuzs
+```
+
+Or with Homebrew (macOS/Linux):
+
+```bash
+brew install prat31/tap/linpuzs
+```
+
+Then plug in your phone and run `linpuzs`. To update later, use `pipx upgrade linpuzs`, `pip install -U linpuzs` or `brew upgrade linpuzs`.
+
+## Development setup
+
+Requires [uv](https://docs.astral.sh/uv/) and `adb` on your PATH.
 
 ```bash
 uv sync
