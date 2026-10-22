@@ -100,7 +100,7 @@ jobs:
           echo "url=$(echo "$sdist" | jq -r .url)" >> "$GITHUB_OUTPUT"
           echo "sha256=$(echo "$sdist" | jq -r .digests.sha256)" >> "$GITHUB_OUTPUT"
 
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
 
       - name: Render the formula
         run: |
