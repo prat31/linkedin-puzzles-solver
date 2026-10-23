@@ -31,7 +31,8 @@ from linpuzs.solvers.zip import LINE_RGB, Board, ZipSolver, is_valid
 RUNS = int(os.environ.get("LINPUZS_FUZZ", "200"))
 
 SCREENS = [(720, 1600), (1080, 2340), (1080, 2400), (1440, 3120), (1440, 3200)]
-PAGE_BG, DOT_RGB, RING_RGB = (28, 31, 35), (234, 234, 235), (221, 101, 47)
+PAGE_BG, DOT_RGB = (28, 31, 35), (234, 234, 235)
+RING_COLOURS = [(221, 101, 47), (160, 60, 170)]  # dot 1's ring: orange or purple seen so far
 
 with resources.files("linpuzs.util").joinpath("digits.npz").open("rb") as f:
     DIGITS = {k: v for k, v in np.load(f).items()}
@@ -124,12 +125,15 @@ def render(board: Board, rng: random.Random) -> FakeScreen:
             y = top + edges[r + 1] + lw / 2
             d.rectangle((left + edges[c], y - wall_w / 2, left + edges[c + 1] + lw, y + wall_w / 2), fill=LINE_RGB)
 
-    rad = 0.315 * cell
+    # Dots are ~0.63 of a cell on small boards and up to ~0.82 on 8×8 ones,
+    # where they come close to the grid lines.
+    rad = rng.uniform(0.31, 0.41) * cell
+    ring_rgb = rng.choice(RING_COLOURS)
     for cellpos, k in board.numbers.items():
         cx, cy = centres[cellpos]
         if k == 1:
-            ring = 0.36 * cell
-            d.ellipse((cx - ring, cy - ring, cx + ring, cy + ring), fill=RING_RGB)
+            ring = rad + 0.045 * cell
+            d.ellipse((cx - ring, cy - ring, cx + ring, cy + ring), fill=ring_rgb)
         d.ellipse((cx - rad, cy - rad, cx + rad, cy + rad), fill=DOT_RGB)
 
     a = np.asarray(img).copy()

@@ -38,6 +38,25 @@ def test_solves_example_end_to_end(screenshot):
     assert isinstance(drag, Drag) and len(drag.points) == 36
 
 
+# 8×8 "HARD" board: its dots nearly fill their cells, which used to make every
+# edge next to a dot look like a wall.
+HARD_NUMBERS = {
+    (1, 1): 1, (1, 2): 2, (1, 5): 3, (6, 5): 4, (6, 2): 5, (6, 1): 6, (5, 1): 7,
+    (2, 1): 8, (2, 2): 9, (2, 5): 10, (3, 4): 11, (3, 3): 12, (5, 2): 13, (4, 3): 14,
+    (4, 4): 15, (5, 5): 16, (2, 6): 17, (1, 6): 18, (6, 6): 19, (5, 6): 20,
+}  # fmt: skip
+
+
+def test_hard_board_with_big_dots():
+    solver = ZipSolver()
+    board = solver.parse(Image.open(EXAMPLE.with_name("zip_hard.png")))
+    assert board.n == 8
+    assert board.numbers == HARD_NUMBERS
+    assert board.walls == set()
+    path = solver.solve(board)
+    assert is_valid(board, path)
+
+
 def test_walls_are_respected():
     # 1 -> 2 directly is blocked, so the path has to go down and around.
     numbers = {(0, 0): 1, (0, 1): 2, (2, 2): 3}

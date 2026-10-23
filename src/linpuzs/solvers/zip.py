@@ -63,17 +63,26 @@ def dot_ink(cell: np.ndarray) -> np.ndarray | None:
 # --- board --------------------------------------------------------------------
 
 
-def _edge_thickness(a: np.ndarray, bg: np.ndarray, centre: tuple[int, int], vertical_line: bool, reach: int) -> float:
-    """Median count of non-background pixels across a grid line at `centre`."""
+def _edge_thickness(line: np.ndarray, centre: tuple[int, int], vertical_line: bool, reach: int) -> float:
+    """Median width of the unbroken run of line-coloured pixels crossing a grid line at `centre`.
+
+    Only the run through the line's centre counts, so a big dot sitting close to
+    the line (as on 8×8 boards) doesn't make the edge look thick.
+    """
     x, y = centre
-    counts = []
+    widths = []
     for off in range(-reach // 2, reach // 2 + 1, max(1, reach // 6)):
-        if vertical_line:
-            strip = a[y + off, x - reach : x + reach + 1]
-        else:
-            strip = a[y - reach : y + reach + 1, x + off]
-        counts.append((np.abs(strip.astype(int) - bg).max(axis=1) > 40).sum())
-    return float(np.median(counts))
+        strip = line[y + off, x - reach : x + reach + 1] if vertical_line else line[y - reach : y + reach + 1, x + off]
+        if not strip[reach]:
+            widths.append(0)
+            continue
+        lo = hi = reach
+        while lo > 0 and strip[lo - 1]:
+            lo -= 1
+        while hi < len(strip) - 1 and strip[hi + 1]:
+            hi += 1
+        widths.append(hi - lo + 1)
+    return float(np.median(widths))
 
 
 def detect_board(img: Image.Image) -> Board:
@@ -98,21 +107,18 @@ def detect_board(img: Image.Image) -> Board:
         raise SolverError(f"Read numbers {sorted(numbers.values())}; expected 1..K with no gaps.")
 
     # Walls: compare each inner edge's thickness with the board's normal line width.
-    # Background: the board is mostly empty cell, so its median colour.
-    board_px = a[grid.rows[0][0] : grid.rows[-1][1] : 4, grid.cols[0][0] : grid.cols[-1][1] : 4]
-    bg = np.median(board_px.reshape(-1, 3), axis=0)
     normal = float(np.median([b - a_ + 1 for a_, b in grid.rows + grid.cols]))
     reach = max(4, round(0.12 * size))
     walls: set[Edge] = set()
     for r in range(n):
         for c in range(n - 1):
             x = sum(grid.cols[c + 1]) // 2
-            if _edge_thickness(a, bg, (x, grid.ys[r]), True, reach) > WALL_FACTOR * normal:
+            if _edge_thickness(line, (x, grid.ys[r]), True, reach) > WALL_FACTOR * normal:
                 walls.add(frozenset({(r, c), (r, c + 1)}))
     for r in range(n - 1):
         for c in range(n):
             y = sum(grid.rows[r + 1]) // 2
-            if _edge_thickness(a, bg, (grid.xs[c], y), False, reach) > WALL_FACTOR * normal:
+            if _edge_thickness(line, (grid.xs[c], y), False, reach) > WALL_FACTOR * normal:
                 walls.add(frozenset({(r, c), (r + 1, c)}))
 
     return Board(n, numbers, walls, grid.xs, grid.ys)
