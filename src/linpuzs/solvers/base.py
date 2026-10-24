@@ -29,6 +29,7 @@ class GameInfo:
     name: str
     tagline: str
     icon: str = "🧩"
+    key: str | None = None  # single-key shortcut in the game menu
 
 
 class SolverError(Exception):

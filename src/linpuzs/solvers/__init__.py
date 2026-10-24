@@ -23,11 +23,11 @@ __all__ = ["GAMES", "GameInfo", "Solver", "SolverError", "get_solver", "register
 GAMES: dict[str, GameInfo] = {
     g.slug: g
     for g in [
-        GameInfo("queens", "Queens", "One crown per row, column and colour region", "👑"),
-        GameInfo("tango", "Tango", "Balance suns and moons across the grid", "🌗"),
-        GameInfo("zip", "Zip", "Draw one path through every cell, in order", "〰️"),
-        GameInfo("mini-sudoku", "Mini Sudoku", "6×6 sudoku", "🔢"),
-        GameInfo("patches", "Patches", "Split the grid into shaped, sized patches", "🧵"),
+        GameInfo("queens", "Queens", "One crown per row, column and colour region", "👑", "q"),
+        GameInfo("tango", "Tango", "Balance suns and moons across the grid", "🌗", "t"),
+        GameInfo("zip", "Zip", "Draw one path through every cell, in order", "〰️", "z"),
+        GameInfo("mini-sudoku", "Mini Sudoku", "6×6 sudoku", "🔢", "m"),
+        GameInfo("patches", "Patches", "Split the grid into shaped, sized patches", "🧵", "p"),
     ]
 }
 

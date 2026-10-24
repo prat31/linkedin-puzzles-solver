@@ -8,6 +8,7 @@ requires-python = ">=3.10"
 dependencies = [
     "rich>=13.7",
     "questionary>=2.0",
+    "prompt_toolkit>=3.0",
     "pillow>=10.0",
     "numpy>=1.26",
 ]
@@ -27,3 +28,7 @@ source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/linpuzs"]
+
+[tool.hatch.build.targets.sdist]
+# Demo videos/GIF are for the README only (it links the GIF from GitHub).
+exclude = ["media/*.mov", "media/*.mp4", "media/*.gif"]

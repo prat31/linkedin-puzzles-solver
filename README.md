@@ -4,6 +4,8 @@ For when you want the streak but not the 4 minutes of staring at coloured square
 
 Plug in your Android phone, open today's LinkedIn puzzle and run `linpuzs`. It grabs a screenshot over ADB, figures out the board, solves it, and taps the answer in for you, usually in a few seconds.
 
+![linpuzs solving Queens, Tango, Mini Sudoku and Patches on a phone](https://raw.githubusercontent.com/prat31/linkedin-puzzles-solver/main/media/demo.gif)
+
 ### Supported games
 
 | Game | Goal |
@@ -56,6 +58,8 @@ linpuzs -s SERIAL            use a specific device
 linpuzs -n                   dry run: solve, but don't touch the screen
 linpuzs --list               show games and solver status
 ```
+
+In the game menu, press a game's key to start it straight away: `q` Queens, `t` Tango, `z` Zip, `m` Mini Sudoku, `p` Patches, or `e` to exit. Arrow keys and Enter work too.
 
 **Dry run:** `linpuzs -n` (or `--dry-run`) reads the board from your phone, solves it and prints the solved board in the terminal, without tapping anything.
 

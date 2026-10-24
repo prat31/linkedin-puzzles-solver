@@ -46,6 +46,7 @@ dependencies = [
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pillow", version = "12.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pillow", version = "13.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "prompt-toolkit" },
     { name = "questionary" },
     { name = "rich" },
 ]
@@ -59,6 +60,7 @@ dev = [
 requires-dist = [
     { name = "numpy", specifier = ">=1.26" },
     { name = "pillow", specifier = ">=10.0" },
+    { name = "prompt-toolkit", specifier = ">=3.0" },
     { name = "questionary", specifier = ">=2.0" },
     { name = "rich", specifier = ">=13.7" },
 ]

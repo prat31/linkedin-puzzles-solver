@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 
 import questionary
+from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
 from questionary import Choice, Style
+from questionary.prompts.common import InquirerControl
 
 from linpuzs import __version__, runner
 from linpuzs.solvers import GAMES, SolverError, get_solver, solver_for
@@ -22,7 +24,7 @@ PROMPT_STYLE = Style(
     ]
 )
 
-QUIT = "__quit__"
+EXIT = "__exit__"
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -77,7 +79,11 @@ def _connected(d: Device) -> AdbDevice:
     return AdbDevice(d)
 
 
-def pick_game() -> str | None:
+def pick_game(**prompt_kwargs) -> str | None:
+    """Game menu. Each game's key (q, t, z, ...) or e for Exit picks it straight away.
+
+    `prompt_kwargs` go to the underlying prompt (tests pass input/output here).
+    """
     choices = []
     for g in GAMES.values():
         ready = solver_for(g.slug) is not None
@@ -86,10 +92,35 @@ def pick_game() -> str | None:
                 f"{g.icon}  {g.name:<12} {g.tagline}",
                 value=g.slug,
                 disabled=None if ready else "coming soon",
+                shortcut_key=g.key or True,
             )
         )
-    choices.append(Choice("👋  Quit", value=QUIT))
-    return questionary.select("Which puzzle?", choices=choices, style=PROMPT_STYLE).ask()
+    choices.append(Choice("👋  Exit", value=EXIT, shortcut_key="e"))
+    question = questionary.select(
+        "Which puzzle?", choices=choices, style=PROMPT_STYLE, use_shortcuts=True, **prompt_kwargs
+    )
+
+    # questionary's shortcuts only move the highlight; make a key press pick the
+    # item right away, finishing the same way Enter does (so the answer is echoed).
+    app = question.application
+    menu = next(c for c in app.layout.find_all_controls() if isinstance(c, InquirerControl))
+
+    def pick(index: int):
+        def handler(event):
+            menu.pointed_at = index
+            menu.is_answered = True
+            event.app.exit(result=menu.get_pointed_at().value)
+
+        return handler
+
+    instant = KeyBindings()
+    for i, c in enumerate(menu.choices):
+        if c.disabled or not isinstance(c.shortcut_key, str):
+            continue
+        for key in {c.shortcut_key.lower(), c.shortcut_key.upper()}:
+            instant.add(key, eager=True)(pick(i))
+    app.key_bindings = merge_key_bindings([app.key_bindings, instant])
+    return question.ask()
 
 
 def solve_once(slug: str, device: AdbDevice, args: argparse.Namespace) -> runner.RunResult | None:
@@ -153,7 +184,7 @@ def main(argv: list[str] | None = None) -> int:
                 results.append(r)
         else:
             console.print()
-            while (slug := pick_game()) not in (None, QUIT):
+            while (slug := pick_game()) not in (None, EXIT):
                 if r := solve_once(slug, device, args):
                     results.append(r)
                 console.print()
