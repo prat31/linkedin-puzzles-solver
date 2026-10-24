@@ -1,10 +1,22 @@
 [project]
 name = "linpuzs"
 dynamic = ["version"]  # from the latest vX.Y.Z git tag, see .github/workflows/release.yml
-description = "LinkedIn puzzle solver: screenshots your phone over ADB, solves the daily game, and taps in the answer."
+description = "Solves LinkedIn's daily puzzles (Queens, Tango, Zip, Mini Sudoku, Patches) on your Android phone over ADB."
 readme = "README.md"
 license = { file = "LICENSE" }
+authors = [{ name = "Pratyush" }]
 requires-python = ">=3.10"
+keywords = ["linkedin", "puzzle", "solver", "queens", "tango", "zip", "sudoku", "adb", "android", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Games/Entertainment :: Puzzle Games",
+]
 dependencies = [
     "rich>=13.7",
     "questionary>=2.0",
@@ -12,6 +24,12 @@ dependencies = [
     "pillow>=10.0",
     "numpy>=1.26",
 ]
+
+[project.urls]
+Homepage = "https://github.com/prat31/linpuzs"
+Source = "https://github.com/prat31/linpuzs"
+Issues = "https://github.com/prat31/linpuzs/issues"
+Releases = "https://github.com/prat31/linpuzs/releases"
 
 [project.scripts]
 linpuzs = "linpuzs.cli:main"
@@ -30,5 +48,5 @@ source = "vcs"
 packages = ["src/linpuzs"]
 
 [tool.hatch.build.targets.sdist]
-# Demo videos/GIF are for the README only (it links the GIF from GitHub).
-exclude = ["media/*.mov", "media/*.mp4", "media/*.gif"]
+# Demo videos/GIF and the social preview are for GitHub only (the README links the GIF from GitHub).
+exclude = ["media/*.mov", "media/*.mp4", "media/*.gif", "media/social-preview.png"]

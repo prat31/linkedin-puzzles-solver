@@ -7,7 +7,7 @@ class Linpuzs < Formula
   include Language::Python::Virtualenv
 
   desc "Solves LinkedIn's daily puzzles on your Android phone over ADB"
-  homepage "https://github.com/prat31/linkedin-puzzles-solver"
+  homepage "https://github.com/prat31/linpuzs"
   url "@@SDIST_URL@@"
   sha256 "@@SDIST_SHA256@@"
   license "MIT"

@@ -1,8 +1,13 @@
 # linpuzs: LinkedIn Puzzles Solver
 
+[![PyPI](https://img.shields.io/pypi/v/linpuzs)](https://pypi.org/project/linpuzs/)
+[![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fprat31%2Flinpuzs%2Fmain%2Fpyproject.toml)](https://pypi.org/project/linpuzs/)
+[![License: MIT](https://img.shields.io/github/license/prat31/linpuzs)](https://github.com/prat31/linpuzs/blob/main/LICENSE)
+[![Release](https://github.com/prat31/linpuzs/actions/workflows/release.yml/badge.svg)](https://github.com/prat31/linpuzs/actions/workflows/release.yml)
+
 Plug in your Android phone, open today's LinkedIn puzzle and run `linpuzs`. It grabs a screenshot over ADB, figures out the board, solves it, and taps the answer in for you, in a few seconds.
 
-![linpuzs solving Queens, Tango, Mini Sudoku and Patches on a phone](https://raw.githubusercontent.com/prat31/linkedin-puzzles-solver/main/media/demo.gif)
+![linpuzs solving Queens, Tango, Mini Sudoku and Patches on a phone](https://raw.githubusercontent.com/prat31/linpuzs/main/media/demo.gif)
 
 ## Supported games
 
@@ -74,3 +79,7 @@ No phone needed. Each game has two test files:
 uv run pytest -q                     # everything (~1-2 min)
 uv run pytest -q tests/test_zip.py   # one game's screenshot tests
 ```
+
+## Disclaimer
+
+linpuzs is an independent hobby project. It is not affiliated with, endorsed by or connected to LinkedIn. LinkedIn and its game names are trademarks of LinkedIn Corporation.
